@@ -2,7 +2,7 @@
 
 DEBUG=1
 VERBOSE=1
-BIN=/usr/local/bin
+INSTALL_DIR=/usr/local/bin
 
 
 die() {
@@ -63,14 +63,16 @@ V_PYTHON="$BASE/venv/bin/python"
 [[ -x "$V_PYTHON" ]] || die 'Venv python is missing or not executable'
 "$V_PYTHON" "$BASE/require-python-3.py" || die "Venv Python version too low"
 
-# Update path in bash wrapper script
-set_var_in_script BASE "$BASE" "$BASE/branches.sh"
-
 # Create symlinks
-ltgt="$BASE/branches.sh"
-lname="$BIN/branches"
-if [[ $EUID -eq 0 ]] ; then
-    ln -s "$ltgt" "$lname"
-else
-    warn "Non-root user: skipping create symlink '$lname'"
-fi
+find "$BASE/bin" -name '*.sh' \
+| while read ; do
+    ltgt=$( readlink -e "$REPLY" )
+    fn_base=$( basename "$ltgt" '.sh' )
+    lname="$INSTALL_DIR/$fn_base"
+
+    # Update BASE in target shell script
+    set_var_in_script BASE "$BASE" "$ltgt"
+
+    # Create symlink
+    echo ln -s "$ltgt" "$lname"
+done

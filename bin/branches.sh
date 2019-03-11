@@ -19,4 +19,4 @@ export REFERENCE_NAMES='production test'
 # from the report
 export TOPIC_KEYWORD='topic'
 
-"$PYTHON" "$BASE/branches.py"
+"$PYTHON" "$BASE/bin/branches.py"
