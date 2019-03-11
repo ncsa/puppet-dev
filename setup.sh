@@ -40,7 +40,7 @@ BASE="$PUP_DEV_BASE" #environment var is best
 [[ -z "$BASE" ]] && BASE=$(readlink -e $( dirname $0 ) ) # $0 is less reliable
 [[ -z "$BASE" ]] && die "Empty base. Re-run with PUP_DEV_BASE env var."
 # Double check install dir by looking for a known file
-[[ -f "$BASE/branches.sh" ]] || die "Unable to determine install dir. Try setting PUP_DEV_BASE env var."
+[[ -f "$BASE/bin/branches.sh" ]] || die "Unable to determine install dir. Try setting PUP_DEV_BASE env var."
 
 # Find python3
 PYTHON=$PY3_PATH #env var is best
@@ -74,5 +74,5 @@ find "$BASE/bin" -name '*.sh' \
     set_var_in_script BASE "$BASE" "$ltgt"
 
     # Create symlink
-    echo ln -s "$ltgt" "$lname"
+    ln -s "$ltgt" "$lname"
 done
