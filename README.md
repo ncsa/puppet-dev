@@ -1,17 +1,4 @@
-# Git Topic Merge Status
-Report merge status of topic branches against mainline branches.
-
-Supports multiple "mainline" branches (ie: `production`, `test`).
-
-Supports multiple remote repositories (ie: `control`, `hiera`, `legacy`).
-
-Sample use: Team of developers working on independant puppet updates across
-multiple repositories.
-Topic branches merge to `test` for testing, then to `production`
-after review and/or during planned maintenance.
-R10K creates dynamic environments from multiple repos, where `control` is
-a puppet control repo, `hiera` contains private, secret data, and `legacy` has
-local, private, unpublished modules.
+Tools for Puppet Development
 
 ## Requirements
 * Python 3
@@ -35,6 +22,36 @@ environment).
        * TOPIC_KEYWORD
 
 # Usage
-* `/usr/local/bin/branches`
+All commands:
+* are installed to `/usr/local/bin`
+* assume per-user puppet repo working directories exist at `$HOME/puppet/<repo_name>`
+
+### branches
+Report merge status of topic branches against mainline branches.
+
+R10K creates dynamic environments from multiple repos, where `control` is
+a puppet control repo, `hiera` contains private, secret data, and `legacy` has
+local, private, unpublished modules.
+* `branches`
 
 Sample output: ![Sample output](sample.png)
+
+### repo_status
+Show current branch for each repo (`control`, `hiera`, `legacy`).
+* `repo_status`
+
+![Sample output](repo_status.png)
+
+### update_wip_env
+Create the puppet environment `/etc/puppetlabs/code/environments/wip_<USERNAME>`
+using contents of current working directories for each repo (`control`, `hiera`, `legacy`)
+for testing live changes without commit-push-deploy cycle.
+
+Note: `<USERNAME>` must be passed as a parameter on the cmdline
+* root@puppet-master# `update_wip_env <USERNAME>`
+
+### repo_checkout
+Checkout the specified branch in each repo (`control`, `hiera`, `legacy`)
+
+For each repo without a matching branch, checkout "production" instead.
+* `/usr/local/bin/repo_checkout <TOPIC_BRANCH>`
