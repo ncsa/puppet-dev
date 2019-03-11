@@ -36,16 +36,17 @@ set_var_in_script() {
 [[ $DEBUG -gt 0 ]] && set -x
 
 # Get install directory
-BASE="$BR_INSTALL_DIR" #environment var is best
+BASE="$PUP_DEV_BASE" #environment var is best
 [[ -z "$BASE" ]] && BASE=$(readlink -e $( dirname $0 ) ) # $0 is less reliable
-[[ -z "$BASE" ]] && die "Empty base. Re-run with BR_INSTALL_DIR env var."
+[[ -z "$BASE" ]] && die "Empty base. Re-run with PUP_DEV_BASE env var."
 # Double check install dir by looking for a known file
-[[ -f "$BASE/branches.sh" ]] || die "Unable to determine install dir. Try setting BR_INSTALL_DIR env var."
+[[ -f "$BASE/branches.sh" ]] || die "Unable to determine install dir. Try setting PUP_DEV_BASE env var."
 
 # Find python3
-PYTHON=$BR_PY3_PATH #env var is best
+PYTHON=$PY3_PATH #env var is best
 [[ -z "$PYTHON" ]] && PYTHON=$(which python3) 2>/dev/null #system search is less reliable
-[[ -z "$PYTHON" ]] && die "Unable to find Python3. Re-run with BR_PY3_PATH env var."
+[[ -z "$PYTHON" ]] && PYTHON=$(which python36) 2>/dev/null #system search is less reliable
+[[ -z "$PYTHON" ]] && die "Unable to find Python3. Re-run with PY3_PATH env var."
 
 # Verify python version 3
 "$PYTHON" "$BASE/require-python-3.py" || die "Python version too low"

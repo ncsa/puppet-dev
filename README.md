@@ -25,10 +25,10 @@ environment).
   * pyyaml
 
 # Installation
-1. `export BR_INSTALL_DIR=/usr/local/src/branches`
-1. `git clone https://github.com/ncsa/branch-merge-status $BR_INSTALL_DIR`
-1. `$BR_INSTALL_DIR/setup.sh`
-1. `vim $BR_INSTALL_DIR/branches.sh`
+1. `export PUP_DEV_BASE=/usr/local/src/puppet-dev
+1. `git clone https://github.com/ncsa/puppet-dev.git $PUP_DEV_BASE`
+1. `$PUP_DEV_BASE/setup.sh`
+1. `vim $PUP_DEV_BASE/branches.sh`
     1. Check / Set values for:
        * REPO_NAMES
        * REFERENCE_NAMES
