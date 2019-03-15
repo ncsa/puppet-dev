@@ -60,7 +60,7 @@ pr_state() {
 # Get current branch names
 branches=()
 for repo in "${REPONAMES[@]}"; do
-    branches+=( $( git --git-dir "$PUPDIR/$repo/.git" branches \
+    branches+=( $( git --git-dir "$PUPDIR/$repo/.git" branch -a \
     | sed -ne 's/^* // p' ) )
 done
 #for b in "${branches[@]}"; do echo "$b"; done
