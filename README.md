@@ -15,7 +15,7 @@ environment).
 1. `export PUP_DEV_BASE=/usr/local/src/puppet-dev`
 1. `git clone https://github.com/ncsa/puppet-dev.git $PUP_DEV_BASE`
 1. `$PUP_DEV_BASE/setup.sh`
-1. `vim $PUP_DEV_BASE/branches.sh`
+1. `vim $PUP_DEV_BASE/bin/branches.sh`
     1. Check / Set values for:
        * REPO_NAMES
        * REFERENCE_NAMES
