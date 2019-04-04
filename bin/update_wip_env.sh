@@ -11,6 +11,7 @@ set -x
 
 PUPPET=/opt/puppetlabs/bin/puppet
 ENVPATH=$( $PUPPET config print environmentpath )
+R10K=/opt/puppetlabs/puppet/bin/r10k
 # TODO this should come from "r10k deploy display"
 declare -A REPO_TARGETS=( ['hiera']='data'
                           ['legacy']='legacy'
@@ -50,5 +51,5 @@ done
 
 # Install modules
 pushd "$env"
-r10k puppetfile install -v notice
+"$R10K" puppetfile install -v notice
 popd

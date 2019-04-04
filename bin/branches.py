@@ -52,7 +52,7 @@ def get_r10k_sources():
     key = 'r10k_sources'
     if key not in resources:
         sources = {}
-        cmd = [ 'r10k', 'deploy', 'display' ]
+        cmd = [ '/opt/puppetlabs/puppet/bin/r10k', 'deploy', 'display' ]
         proc = subprocess.run( cmd, 
                                stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE, 
