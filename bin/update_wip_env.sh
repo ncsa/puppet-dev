@@ -36,7 +36,9 @@ base=$( getent passwd $user | cut -d: -f6 )/puppet
 
 # Copy control working contents
 env="$ENVPATH/wip_${user}"
-[[ -d "$env" ]] || mkdir -p "$env"
+[[ -d "$env" ]] && find "$env" -delete
+[[ -d "$env" ]] && die "Failed to delete old WIP env dir '$env'"
+mkdir -p "$env"
 [[ -d "$env" ]] || die "Failed at 'mkdir -p $env'"
 rsync -rlt "$base/control/" "$env/"
 
