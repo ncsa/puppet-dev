@@ -2,7 +2,7 @@
 
 DEBUG=1
 VERBOSE=1
-INSTALL_DIR=/usr/local/bin
+INSTALL_DIR=$HOME/testing
 
 
 die() {

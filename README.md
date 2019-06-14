@@ -8,7 +8,7 @@ Tools for Puppet Development
 environment).
 * Pip
   * colored
-  * tabulate
+  * dashtable (which depends on bs4)
   * pyyaml
 
 # Installation

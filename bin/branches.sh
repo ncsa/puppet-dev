@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-BASE=/usr/local/src/branches
+BASE=/usr/local/src/puppet-dev
 PYTHON="${BASE}/venv/bin/python"
 
 # git repos names (ie: r10k sources)

@@ -12,14 +12,15 @@ loglvl = logging.INFO
 logging.basicConfig( level=loglvl, format=logfmt )
 
 # Finish imports
+import collections
+import colored
+import dashtable
 import os
 import pathlib
 import pprint
+import re
 import subprocess
-import tabulate
-import colored
 import yaml
-import collections
 
 # Custom type for R10K source data
 R10KSrc = collections.namedtuple( 'R10KSrc', ['basedir', 'environments', 'remote'] )
@@ -59,7 +60,7 @@ def get_r10k_sources():
                                check=True,
                                timeout=30
                              )
-        data = yaml.load( proc.stdout )
+        data = yaml.safe_load( proc.stdout )
         logging.debug( 'Raw Data:\n{}\n'.format( pprint.pformat( data ) ) )
         # create r10k resource list
         for s in data[':sources']:
@@ -188,8 +189,8 @@ def run():
                     colored.fg(0) + colored.bg(214),
                     colored.fg(0) + colored.bg(208),
                   ]
-    yes = colored.stylize( 'Yes', colored.fg('green') )
-    no = colored.stylize( 'No', colored.fg('red') )
+    yes_color = colored.stylize( ' Yes ', colored.fg('green') )
+    no_color = colored.stylize( ' No ', colored.fg('red') )
 
     # Create data rows for output
     # Row format is:
@@ -197,22 +198,27 @@ def run():
     # 0     1    2    3    4    5    6
     # topic prod test prod test prod test
     br_max_len = 4
-    br_hdrs = [ b[:br_max_len] for b in branches ]
-    hdrs = [ 'TOPIC' ]
-    [ hdrs.extend( br_hdrs ) for r in repos ]
-    rows = []
+    br_hdrs = [ b[:br_max_len].upper() for b in branches ]
+    hdr_row_2 = [ 'TOPIC' ]
+    [ hdr_row_2.extend( br_hdrs ) for r in repos ]
+    #rows = []
+    rows = [ hdr_row_2 ]
     max_topic_len = 0
     for topic in sorted( topics ):
+        rownum = len( rows )
         if len( topic ) > max_topic_len:
             max_topic_len = len( topic )
         row = [ topic ]
         for repo in repos:
             for branch in branches:
+                colnum = len( row )
                 val = '-'
                 if topic in statuses[repo][branch]['merged']:
-                    val = yes
+                    #val = yes
+                    val = 'Yes'
                 elif topic in statuses[repo][branch]['notmerged']:
-                    val = no
+                    #val = no
+                    val = 'No'
                 row.append( val )
         rows.append( row )
 
@@ -220,15 +226,64 @@ def run():
     pad_len = 2 #cell padding size
     sep_len = 2 #column separator size
     sep = ' ' * sep_len
-    repo_col_size = (br_max_len * len(branches)) + ( 1 * pad_len ) + sep_len
-    parts = [ ' ' * max_topic_len ]
+    hdr_row_1 = [ '' ]
     for i,r in enumerate(repos):
-        parts.append( colored.stylize( r.upper().center(repo_col_size), repo_colors[i] ) + sep )
-    print( sep.join( parts ) )
+        hdr_row_1.append( r.upper() )
+        for b in branches[1:]:
+            hdr_row_1.append( '' )
 
-    # Print table
-    print( tabulate.tabulate( rows, headers=hdrs ) )
+    rows.insert( 0, hdr_row_1 )
 
+    table_params = {
+        'use_headers': True,
+        'center_cells': False,
+        'center_headers': True,
+    }
+       
+    # colspans are directly related to number of branches and number of repos
+    num_branches = len( branches )
+    if num_branches > 1:
+        spanlist = []
+        for repo_iter in range( len( repos ) ):
+            cells = []
+            for br_iter in range( 1, num_branches + 1 ):
+                colnum = repo_iter * num_branches + br_iter
+                cells.append( [0,colnum] )
+            spanlist.append( cells )
+        table_params[ 'spans' ] = spanlist
+        table_params['spans'] = spanlist
+    text_table = dashtable.data2rst( rows, **table_params )
+
+    # Attempt to replace plain strings with colorized versions
+    text_table = text_table.replace( ' Yes ', yes_color )
+    text_table = text_table.replace( ' No ', no_color )
+    for i,r in enumerate(repos):
+        R = r.upper()
+        pattern = f'\|( +{R} +)\|'
+        match = re.search( pattern, text_table )
+        if match:
+            old = match.group(1)
+            new = colored.stylize( old, repo_colors[i] )
+            text_table = text_table.replace( old, new )
+
+    # Remove column markers
+    text_table = text_table.replace( '|', ' ' )
+
+    # Unindent everything
+    lines = text_table.splitlines()
+    lines = [ l[2:] for l in lines ]
+
+    # Save last line to use as header demark
+    demark_line = lines.pop()
+    demark_line = demark_line.replace( '+', ' ' )
+
+    # Remove non-content lines
+    lines = [ l for l in lines if ' ' in l ]
+
+    # Add in demark line
+    lines.insert( 2, demark_line )
+
+    print( '\n'.join( lines ) )
 
 if __name__ == '__main__':
     run()
